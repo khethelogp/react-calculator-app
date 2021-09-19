@@ -1,6 +1,5 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React,{ useState } from 'react';
+import './App.css'
 
 const nums = [7, 8, 9, 4, 5, 6, 1, 2, 3, 0];
 const ops = [ '/', '*', '-', '+'];
@@ -21,137 +20,116 @@ const ids = {
   '+': 'add'
 }
 
-class App extends React.Component {
-  state = {
-    lastPressed: undefined,
-    calc: '0',
-    operation: undefined
-  }
-  
-  
-  handleClick = (e) => {
-    const { calc, lastPressed } = this.state;
+const App = () => {
+  const [lastPressed,setLastPressed] = useState(undefined);
+  const [calc, setCalc] = useState('0');
+
+  const handleClick = (e) => {
     const { innerText } = e.target;
-    
-    switch(innerText) {
+
+    switch (innerText) {
       case 'AC': {
-        this.setState({
-          calc: '0',
-        });
+        setCalc('0');
         break;
       }
-        
+
       case '=': {
         const evaluated = eval(calc);
-        this.setState({
-          calc: evaluated
-        });
+        console.log(evaluated)
+        setCalc(evaluated);
         break;
       }
-        
+
       case '.': {
         const splitted = calc.split(/[\+\-\*\/]/);
         const last = splitted.slice(-1)[0];
-        
         if(!last.includes('.')) {
-          this.setState({
-            calc: calc+'.'
-          })
+            setCalc(calc +'.')
         }
-        
         break;
       }
-        
+
       default: {
         let e = undefined;
-        // check for other operators
+        //check for other operators
         if(ops.includes(innerText)) {
           if(ops.includes(lastPressed) && innerText !== '-') {
-            // HECTIC...
+            //Hectic
             const lastNumberIdx = calc.split('').reverse()
-                .findIndex(char => char !== ' ' && nums.includes(+char)); 
+            .findIndex(char => char !== ' ' && nums.includes(+char)); 
             e = calc.slice(0, calc.length - lastNumberIdx) + ` ${innerText} `;
           } else {
             e = `${calc} ${innerText} `;
-          }
-        } else {
+          } 
+        }else {
           e = (calc === '0') ? innerText : (calc + innerText);
         }
         
-        this.setState({
-          calc: e
-        });
+        setCalc(e);
+        break;
       }
     }
-    
-    this.setState({
-      lastPressed: innerText
-    })
-    
+
+    setLastPressed(innerText);
   }
-  
-  render() {
-    const { currentNumber, calc } = this.state;
-    
-    return (
-      <div className="calculator">   
-        <div id="display" className="display">
-          <small></small>
-          {calc}
-        </div>
-        
-        <div className="nums-container">
-          <button 
-            className="big-h light-grey ac" 
-            onClick={this.handleClick} 
-            id="clear"
-            >
-            AC
-          </button>
-          
-          {nums.map(num => (
-            <button 
-              className={`dark-grey ${num === 0 && 'big-h'}`} 
-              key={num} 
-              onClick={this.handleClick}
-              id={ids[num]}
-             >
-              {num}
-            </button>
-          ))}
-          
-          <button 
-            className="light-grey" 
-            onClick={this.handleClick} 
-            id="decimal"
-           >
-            .
-          </button>
-        </div>
-        <div className="ops-container">
-          {ops.map(op => (
-            <button 
-              className="orange" 
-              key={op} 
-              onClick={this.handleClick}
-              id={ids[op]}
-             >
-              {op}
-            </button>
-          ))}
-          
-          <button 
-            className="orange" 
-            onClick={this.handleClick} 
-            id="equals"
-           >
-            =
-          </button>
-        </div>
+
+  return (
+    <div className="calculator">
+      <div id="display" className="display">
+        <small></small>
+        {calc}
       </div>
-    )
-  }
+
+      <div className="nums-container">
+        <button
+          className="big-h light-grey ac"
+          id="clear"
+          onClick={handleClick}
+        >
+          AC
+        </button>
+
+        {nums.map(num => (
+          <button
+            className={`dark-grey ${num === 0 && 'big-h'}`}
+            key={num}
+            onClick={handleClick}
+            id={ids[num]}
+          >
+            {num}
+          </button>
+        ))}
+
+        <button 
+          className="light-grey"
+          onClick={handleClick}
+          id="decimal"
+        >
+          .
+        </button>
+      </div>
+      <div className="ops-container">
+        {ops.map(op =>(
+          <button 
+            className="orange"
+            key={op}
+            onClick={handleClick}
+            id={ids[op]}
+          >
+            {op}
+          </button>
+        ))}
+
+        <button 
+          className="orange" 
+          onClick={handleClick}
+          id="equals"
+        >
+          =
+        </button>
+      </div>
+    </div>
+  )
 }
 
-
-export default App;
+export default App
